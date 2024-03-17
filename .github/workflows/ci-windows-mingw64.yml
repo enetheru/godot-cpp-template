@@ -33,10 +33,13 @@ jobs:
           pacboy: >-
             git
             python
-            scons
+            scons:p
             gcc:p
             cmake:p
             ninja:p
+
+      - name: add scons-compiledb
+        run: pip install scons-compiledb
 
       - name: Get Godot ref
         id: get-godot-ref
