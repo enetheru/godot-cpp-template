@@ -81,14 +81,14 @@ jobs:
           echo "godotcppref=$(git ls-remote -h --refs https://github.com/godotengine/godot-cpp.git master)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
-        id: cache-godot
+        id: cache-godot-cpp
         with:
           path: ext/godot-cpp
           key: Godot-${{ runner.os }}-${{ steps.get-godot-cpp-ref.outputs.godotcppref }}
 
       - name: Clone godot-cpp to ext folder
+        if: steps.cache-godot-cpp.outputs.cache-hit != 'true'
         run: git clone https://github.com/godotengine/godot-cpp.git ext/godot-cpp
-
 
       - name: Build with Scons
         run: scons
