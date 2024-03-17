@@ -33,7 +33,8 @@ jobs:
           pacboy: >-
             git
             python
-            scons:p
+            python-pip
+            scons
             gcc:p
             cmake:p
             ninja:p
