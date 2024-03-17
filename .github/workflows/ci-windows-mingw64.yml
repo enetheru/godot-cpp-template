@@ -1,0 +1,93 @@
+name: Build Windows.MinGW64
+on: [push, pull_request]
+
+env:
+  # Only used for the cache key. Increment version to force clean build.
+  GODOT_BASE_BRANCH: master
+
+concurrency:
+  group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  # Windows-MinGW64-Windows
+  # =======================
+  build-windows-mingw-windows:
+    name: 🏁 Windows.MinGW64.windows
+    runs-on: windows-2019
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+#        with:
+#          submodules: recursive
+
+      # Install OS Level deps
+      - name: Install MSYS2 and Dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          pacboy: >-
+            gcc:p
+            cmake:p
+            ninja:p
+
+#      # Cmake configure and build godot-cpp
+#      - name: Configure godot-cpp
+#        # FIXME this stage uses in-source build, because the test extension
+#        # relies on it. In the future change this to allow out of source build.
+#        run: >-
+#          cmake
+#          -DCMAKE_BUILD_TYPE=Release
+#          -GNinja .
+#      - name: Build godot-cpp
+#        run: |
+#          cmake -LH -B .
+#          cmake --build . -j $(nproc)
+#
+#      # Configure and build test extension
+#      - name: Configure godot-cpp/test
+#        run: >-
+#          cmake -B build-test -S test
+#          -DCMAKE_BUILD_TYPE=Release
+#          -DGODOT_HEADERS_PATH="./godot-headers"
+#          -DCPP_BINDINGS_PATH="."
+#          -GNinja .
+#      - name: Build godot-cpp/test
+#        run: |
+#          cmake -B build-test -LH
+#          cmake --build build-test -j $(nproc)
+#
+#      # Perform testing
+#      - name: Download latest Godot artifacts
+#        uses: dsnopek/action-download-artifact@1322f74e2dac9feed2ee76a32d9ae1ca3b4cf4e9
+#        with:
+#          repo: godotengine/godot
+#          branch: 4.2
+#          event: push
+#          workflow: windows_builds.yml
+#          workflow_conclusion: success
+#          name: windows-editor
+#          search_artifacts: true
+#          check_artifacts: true
+#          ensure_latest: true
+#          path: godot-artifacts
+#
+#      - name: Run tests
+#        run: |
+#          chmod +x ./godot-artifacts/godot.windows.editor.x86_64.exe
+#          ./godot-artifacts/godot.windows.editor.x86_64.exe --headless --version
+#          cd test
+#          # Need to run the editor so .godot is generated... but it crashes! Ignore that :-)
+#          (cd project && (timeout 10 ../../godot-artifacts/godot.windows.editor.x86_64.exe --editor --headless --quit >/dev/null 2>&1 || true))
+#          GODOT=../godot-artifacts/godot.windows.editor.x86_64.exe ./run-tests.sh
+#
+#          #      - name: Upload artifact
+#          #uses: actions/upload-artifact@v3
+#          #with:
+#          #name: ${{ matrix.platforms.artifact-name }}-${{ matrix.builder.name }}
+#          #path: ${{ matrix.builder.artifact-dir}}${{ matrix.platforms.artifact-path }}
+#          #if-no-files-found: error
