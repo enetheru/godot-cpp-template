@@ -1,5 +1,5 @@
-name: Build Windows.MinGW64
-on: [push, pull_request]
+name: Build using CMake
+on: [push, pull_request, workflow_dispatch]
 
 env:
   # Only used for the cache key. Increment version to force clean build.
@@ -10,10 +10,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Windows-MinGW64-Windows
-  # =======================
-  build-windows-mingw-windows:
-    name: 🏁 Windows.MinGW64.windows
+  # Windows-mingw-w64-gcc
+  # =====================
+  windows-mingw-w64-gcc:
+    name: 🏁 Windows.mingw-w64.gcc
     runs-on: windows-2019
 
     defaults:
@@ -21,19 +21,34 @@ jobs:
         shell: msys2 {0}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-#        with:
-#          submodules: recursive
-
-      # Install OS Level deps
-      - name: Install MSYS2 and Dependencies
-        uses: msys2/setup-msys2@v2
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
         with:
+          msystem: UCRT64
+          update: true
           pacboy: >-
             gcc:p
             cmake:p
             ninja:p
+
+      - name: Retrieve Godot.exe
+        uses: dsnopek/action-download-artifact@1322f74e2dac9feed2ee76a32d9ae1ca3b4cf4e9
+        with:
+          repo: godotengine/godot
+          branch: master
+          event: push
+          workflow: windows_builds.yml
+          workflow_conclusion: success
+          name: windows-editor
+          search_artifacts: true
+          check_artifacts: true
+          ensure_latest: true
+          path: godot-artifacts
+
+      - name: Run tests
+        run: |
+          chmod +x ./godot-artifacts/godot.windows.editor.x86_64.exe
+          ./godot-artifacts/godot.windows.editor.x86_64.exe --headless --script pre-build.gd
 
 #      # Cmake configure and build godot-cpp
 #      - name: Configure godot-cpp
