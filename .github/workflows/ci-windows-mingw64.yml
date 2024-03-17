@@ -20,6 +20,10 @@ jobs:
       run:
         shell: msys2 {0}
 
+    strategy:
+      matrix:
+        branch: [master]
+
     steps:
       - uses: actions/checkout@v4
       - uses: msys2/setup-msys2@v2
@@ -35,7 +39,7 @@ jobs:
       - name: Get Godot ref
         id: get-godot-ref
         run: |
-          echo "godotref=$(git ls-remote -h --refs https://github.com/godotengine/godot.git master)" >> $GITHUB_OUTPUT
+          echo "godotref=$(git ls-remote https://github.com/godotengine/godot.git ${{ matrix.branch }} | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: cache-godot
@@ -43,7 +47,7 @@ jobs:
           path: |
             bin
             ext/api-dump
-          key: Godot-${{ runner.os }}-${{ steps.get-godot-ref.outputs.godotref }}
+          key: Godot-${{ matrix.branch }}-${{ runner.os }}-${{ steps.get-godot-ref.outputs.godotref }}
 
       - name: Retrieve Godot.exe
         if: steps.cache-godot.outputs.cache-hit != 'true'
@@ -78,17 +82,17 @@ jobs:
       - name: Get godot-cpp ref
         id: get-godot-cpp-ref
         run: |
-          echo "godotcppref=$(git ls-remote -h --refs https://github.com/godotengine/godot-cpp.git master)" >> $GITHUB_OUTPUT
+          echo "godotcppref=$(git ls-remote https://github.com/godotengine/godot-cpp.git ${{ matrix.branch }} | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: cache-godot-cpp
         with:
           path: ext/godot-cpp
-          key: Godot-${{ runner.os }}-${{ steps.get-godot-cpp-ref.outputs.godotcppref }}
+          key: godot-cpp-${{ matrix.branch }}-${{ steps.get-godot-cpp-ref.outputs.godotcppref }}
 
       - name: Clone godot-cpp to ext folder
         if: steps.cache-godot-cpp.outputs.cache-hit != 'true'
-        run: git clone https://github.com/godotengine/godot-cpp.git ext/godot-cpp
+        run: git clone -b ${{ matrix.branch }} https://github.com/godotengine/godot-cpp.git ext/godot-cpp
 
       - name: Build with Scons
         run: scons
