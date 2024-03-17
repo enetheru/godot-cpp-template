@@ -32,6 +32,8 @@ jobs:
           update: true
           pacboy: >-
             git
+            python
+            scons
             gcc:p
             cmake:p
             ninja:p
