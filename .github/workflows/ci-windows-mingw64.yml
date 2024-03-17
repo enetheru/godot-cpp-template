@@ -75,8 +75,23 @@ jobs:
           cd ext/api-dump
           ../../bin/godot.windows.editor.x86_64.exe  --headless --dump-gdextension-interface --dump-extension-api --quit
 
-      - run: pwd && ls -R
+      - name: Get godot-cpp ref
+        id: get-godot-cpp-ref
+        run: |
+          echo "godotcppref=$(git ls-remote -h --refs https://github.com/godotengine/godot-cpp.git master)" >> $GITHUB_OUTPUT
 
+      - uses: actions/cache@v4
+        id: cache-godot
+        with:
+          path: ext/godot-cpp
+          key: Godot-${{ runner.os }}-${{ steps.get-godot-cpp-ref.outputs.godotcppref }}
+
+      - name: Clone godot-cpp to ext folder
+        run: git clone https://github.com/godotengine/godot-cpp.git ext/godot-cpp
+
+
+      - name: Build with Scons
+        run: scons
 #      # Cmake configure and build godot-cpp
 #      - name: Configure godot-cpp
 #        # FIXME this stage uses in-source build, because the test extension

@@ -48,7 +48,9 @@ compilation_db = env.CompilationDatabase(
 )
 env.Alias("compiledb", compilation_db)
 
-env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
+# TODO This is where we have to clone the godot-cpp library
+
+env = SConscript("ext/godot-cpp/SConstruct", {"env": env, "customs": customs})
 
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")

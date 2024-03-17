@@ -36,3 +36,6 @@ compile_commands.json
 
 # Jetbrains clion
 .idea/
+
+ext/
+bin/
