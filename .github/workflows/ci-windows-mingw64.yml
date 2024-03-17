@@ -27,13 +27,26 @@ jobs:
           msystem: UCRT64
           update: true
           pacboy: >-
+            git
             gcc:p
             cmake:p
             ninja:p
 
-      # TODO retrieve cache for godot-exe
+      - name: Get Godot ref
+        id: get-godot-ref
+        run: |
+          echo "godotref=$(git ls-remote -h --refs https://github.com/godotengine/godot.git master)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        id: cache-godot
+        with:
+          path: |
+            bin
+            ext/api-dump
+          key: Godot-${{ runner.os }}-${{ steps.get-godot-ref.outputs.godotref }}
 
       - name: Retrieve Godot.exe
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         uses: dsnopek/action-download-artifact@1322f74e2dac9feed2ee76a32d9ae1ca3b4cf4e9
         with:
           repo: godotengine/godot
@@ -47,8 +60,8 @@ jobs:
           ensure_latest: true
           path: bin
 
-      # TODO add bin to the path
-      - name: make godot.exe
+      - name: give godot executable permissions
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
           chmod +x ./bin/godot.windows.editor.x86_64.exe
 
@@ -56,12 +69,12 @@ jobs:
         run: ./bin/godot.windows.editor.x86_64.exe --headless --script pre-build.gd
 
       - name: Godot.exe API Dump
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
           mkdir -p ext/api-dump
           cd ext/api-dump
           ../../bin/godot.windows.editor.x86_64.exe  --headless --dump-gdextension-interface --dump-extension-api --quit
 
-      # TODO set cache of godot-exe and gdextension
       - run: pwd && ls -R
 
 #      # Cmake configure and build godot-cpp
