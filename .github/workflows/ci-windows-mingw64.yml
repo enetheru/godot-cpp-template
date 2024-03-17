@@ -31,6 +31,8 @@ jobs:
             cmake:p
             ninja:p
 
+      # TODO retrieve cache for godot-exe
+
       - name: Retrieve Godot.exe
         uses: dsnopek/action-download-artifact@1322f74e2dac9feed2ee76a32d9ae1ca3b4cf4e9
         with:
@@ -43,12 +45,24 @@ jobs:
           search_artifacts: true
           check_artifacts: true
           ensure_latest: true
-          path: godot-artifacts
+          path: bin
 
-      - name: Run tests
+      # TODO add bin to the path
+      - name: make godot.exe
         run: |
-          chmod +x ./godot-artifacts/godot.windows.editor.x86_64.exe
-          ./godot-artifacts/godot.windows.editor.x86_64.exe --headless --script pre-build.gd
+          chmod +x ./bin/godot.windows.editor.x86_64.exe
+
+      - name: Godot.exe Info Dump
+        run: ./bin/godot.windows.editor.x86_64.exe --headless --script pre-build.gd
+
+      - name: Godot.exe API Dump
+        run: |
+          mkdir -p ext/api-dump
+          cd ext/api-dump
+          ../../bin/godot.windows.editor.x86_64.exe  --headless --dump-gdextension-interface --dump-extension-api --quit
+
+      # TODO set cache of godot-exe and gdextension
+      - run: pwd && ls -R
 
 #      # Cmake configure and build godot-cpp
 #      - name: Configure godot-cpp
@@ -75,34 +89,10 @@ jobs:
 #        run: |
 #          cmake -B build-test -LH
 #          cmake --build build-test -j $(nproc)
-#
-#      # Perform testing
-#      - name: Download latest Godot artifacts
-#        uses: dsnopek/action-download-artifact@1322f74e2dac9feed2ee76a32d9ae1ca3b4cf4e9
-#        with:
-#          repo: godotengine/godot
-#          branch: 4.2
-#          event: push
-#          workflow: windows_builds.yml
-#          workflow_conclusion: success
-#          name: windows-editor
-#          search_artifacts: true
-#          check_artifacts: true
-#          ensure_latest: true
-#          path: godot-artifacts
-#
-#      - name: Run tests
-#        run: |
-#          chmod +x ./godot-artifacts/godot.windows.editor.x86_64.exe
-#          ./godot-artifacts/godot.windows.editor.x86_64.exe --headless --version
-#          cd test
-#          # Need to run the editor so .godot is generated... but it crashes! Ignore that :-)
-#          (cd project && (timeout 10 ../../godot-artifacts/godot.windows.editor.x86_64.exe --editor --headless --quit >/dev/null 2>&1 || true))
-#          GODOT=../godot-artifacts/godot.windows.editor.x86_64.exe ./run-tests.sh
-#
-#          #      - name: Upload artifact
-#          #uses: actions/upload-artifact@v3
-#          #with:
-#          #name: ${{ matrix.platforms.artifact-name }}-${{ matrix.builder.name }}
-#          #path: ${{ matrix.builder.artifact-dir}}${{ matrix.platforms.artifact-path }}
-#          #if-no-files-found: error
+
+#       - name: Upload artifact
+#          uses: actions/upload-artifact@v3
+#          with:
+#          name: ${{ matrix.platforms.artifact-name }}-${{ matrix.builder.name }}
+#          path: ${{ matrix.builder.artifact-dir}}${{ matrix.platforms.artifact-path }}
+#          if-no-files-found: error
