@@ -59,11 +59,11 @@ configure_dict = {
     '${LIBRARY_FILENAME}': lib_filename,
 }
 # TODO Conditional configure_dict entries
-# '#reloadable': 'reloadable',
+# ';reloadable': 'reloadable',
 # '${ENABLE_HOT_RELOAD}': 'yes',
-# '#compatibility_maximum': 'compatibility_maximum',
+# ';compatibility_maximum': 'compatibility_maximum',
 # '${COMPATIBILITY_MAXIMUM}': 'min_version',
-# '#autodetect_library_prefix': 'autodetect_library_prefix',
+# ';autodetect_library_prefix': 'autodetect_library_prefix',
 # "${AUTO_LIB_PREFIX}": 'res://gdextension/{}'.format(extension_name),
 
 # Configure files

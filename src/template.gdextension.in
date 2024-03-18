@@ -2,12 +2,12 @@
 
 entry_symbol = "${ENTRY_SYMBOL}"
 compatibility_minimum = "${COMPATIBILITY_MINIMUM}"
-#compatibility_maximum = "${COMPATIBILITY_MAXIMUM}"
-#reloadable = "${ENABLE_HOT_RELOAD}"
-#autodetect_library_prefix = "${AUTO_LIB_PREFIX}"
+;compatibility_maximum = "${COMPATIBILITY_MAXIMUM}"
+;reloadable = "${ENABLE_HOT_RELOAD}"
+;autodetect_library_prefix = "${AUTO_LIB_PREFIX}"
 
 [libraries]
 ${FEATURE_FLAGS} = "res://gdextensions/${EXTENSION_NAME}/${LIBRARY_FILENAME}"
 
 [icons]
-#iconkey = <path>
+;iconkey = <path>
