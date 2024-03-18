@@ -34,9 +34,9 @@ jobs:
             git
             python
             python-pip
-            gcc:p
             cmake:p
             ninja:p
+            toolchain:p
 
       - name: add scons-compiledb
         run: |
@@ -100,7 +100,7 @@ jobs:
 
       - name: Clone godot-cpp to ext folder
         if: steps.cache-godot-cpp.outputs.cache-hit != 'true'
-        run: git clone -b ${{ matrix.branch }} https://github.com/godotengine/godot-cpp.git ext/godot-cpp
+        run: git clone --depth 1 -b ${{ matrix.branch }} https://github.com/godotengine/godot-cpp.git ext/godot-cpp
 
       - name: Build with Scons
         run: scons platform=windows
