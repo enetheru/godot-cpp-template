@@ -31,8 +31,8 @@ jobs:
           msystem: UCRT64
           update: true
           pacboy: >-
+            git
             toolchain:p
-            git:p
             python-pip:p
             
 
