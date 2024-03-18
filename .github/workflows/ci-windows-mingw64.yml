@@ -1,4 +1,4 @@
-name: Build using CMake
+name: Build on Windows for Windows using Scons
 on: [push, pull_request, workflow_dispatch]
 
 env:
@@ -102,31 +102,12 @@ jobs:
 
       - name: Build with Scons
         run: scons platform=windows use_mingw=yes gdextension_dir=ext/api-dump
-#      # Cmake configure and build godot-cpp
-#      - name: Configure godot-cpp
-#        # FIXME this stage uses in-source build, because the test extension
-#        # relies on it. In the future change this to allow out of source build.
-#        run: >-
-#          cmake
-#          -DCMAKE_BUILD_TYPE=Release
-#          -GNinja .
-#      - name: Build godot-cpp
-#        run: |
-#          cmake -LH -B .
-#          cmake --build . -j $(nproc)
-#
-#      # Configure and build test extension
-#      - name: Configure godot-cpp/test
-#        run: >-
-#          cmake -B build-test -S test
-#          -DCMAKE_BUILD_TYPE=Release
-#          -DGODOT_HEADERS_PATH="./godot-headers"
-#          -DCPP_BINDINGS_PATH="."
-#          -GNinja .
-#      - name: Build godot-cpp/test
-#        run: |
-#          cmake -B build-test -LH
-#          cmake --build build-test -j $(nproc)
+
+      - name: Run tests
+        run: |
+          # Need to run the editor so .godot is generated... but it crashes! Ignore that :-)
+          (timeout 10 bin/godot.windows.editor.x86_64.exe --headless -e --path test/project --quit >/dev/null 2>&1 || true)
+          GODOT=./bin/godot-artifacts/godot.windows.editor.x86_64.exe ./test/run-tests.sh
 
 #       - name: Upload artifact
 #          uses: actions/upload-artifact@v3

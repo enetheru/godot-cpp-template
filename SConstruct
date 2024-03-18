@@ -44,7 +44,7 @@ else:
     lib_filename = "{}{}{}".format(env['extension_name'], env["suffix"], env["SHLIBSUFFIX"])
     lib_path = "{}/{}".format(env['extension_name'], lib_filename)
 
-# GDextension Path/Filename
+# GDExtension Path/Filename
 gdextension_filename = "{}.gdextension".format(env['extension_name'])
 gdextension_path = Path() / env['extension_name'] / gdextension_filename
 
