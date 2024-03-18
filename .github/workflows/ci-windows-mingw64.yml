@@ -107,7 +107,7 @@ jobs:
         run: |
           # Need to run the editor so .godot is generated... but it crashes! Ignore that :-)
           (timeout 10 bin/godot.windows.editor.x86_64.exe --headless -e --path test/project --quit >/dev/null 2>&1 || true)
-          GODOT=./bin/godot-artifacts/godot.windows.editor.x86_64.exe ./test/run-tests.sh
+          GODOT=./bin/godot.windows.editor.x86_64.exe ./test/run-tests.sh
 
 #       - name: Upload artifact
 #          uses: actions/upload-artifact@v3

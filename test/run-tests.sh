@@ -1,11 +1,15 @@
 #!/bin/bash
 
-GODOT=${GODOT:-godot}
+if [ "${GODOT}" = "" ]; then
+  echo "Godot binary not specified, aborting tests"
+  exit 1
+fi
+echo "GODOT=$GODOT"
 
 END_STRING="==== TESTS FINISHED ===="
 FAILURE_STRING="******** FAILED ********"
 
-OUTPUT=$($GODOT --path project --debug --headless --quit)
+OUTPUT=$($GODOT --path ./test/project --debug --headless --quit)
 ERRCODE=$?
 
 echo "$OUTPUT"
