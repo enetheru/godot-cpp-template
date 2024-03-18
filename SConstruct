@@ -20,7 +20,8 @@ customs = ["custom.py"]
 customs = [os.path.abspath(path) for path in customs]
 
 opts = Variables(customs, ARGUMENTS)
-opts.Add("extension_name", help="The name of the library, will generate files with the name as the prefix",
+opts.Add("extension_name",
+         help="The name of the library, will generate files with the name as the prefix",
          default="gde_template")
 
 opts.Add(PathVariable(
@@ -32,29 +33,22 @@ opts.Update(localEnv)
 
 Help(opts.GenerateHelpText(localEnv))
 
-env = localEnv.Clone()
+# Pull in the godot-cpp project
+env = SConscript("ext/godot-cpp/SConstruct", {"env": localEnv.Clone(), "customs": customs})
 
-# Provide options to configure these two values
-project_dir = Path(env['project_path'])
-
-# TODO This is where we have to clone the godot-cpp library
-
-env = SConscript("ext/godot-cpp/SConstruct", {"env": env, "customs": customs})
-
-env.Append(CPPPATH=["src/"])
-lib_sources = Glob("src/*.cpp")
-
-lib_filename = Path("{}{}{}".format(env['extension_name'], env["suffix"], env["SHLIBSUFFIX"]))
-
+# Library Path/Filename
 if env["platform"] == "macos":
-    platform_library_name = "{}.{}.{}".format(env['extension_name'], env["platform"], env["target"])
-    lib_filename = "{}.framework/{}".format(env["platform"], platform_library_name, platform_library_name)
+    lib_filename = "{}.{}.{}".format(env['extension_name'], env["platform"], env["target"])
+    lib_path = "{}.framework/{}".format(env["platform"], lib_filename)
+else:
+    lib_filename = "{}{}{}".format(env['extension_name'], env["suffix"], env["SHLIBSUFFIX"])
+    lib_path = "{}/{}".format(env['extension_name'], lib_filename)
 
-lib_path = "{}/{}".format(env['extension_name'], lib_filename)
-build_library = env.SharedLibrary(
-    lib_path,
-    source=lib_sources,
-)
+# GDextension Path/Filename
+gdextension_filename = "{}.gdextension".format(env['extension_name'])
+gdextension_path = Path() / env['extension_name'] / gdextension_filename
+
+# Configuration Variables
 feature_flags = '{}.{}'.format(env["platform"], env["target"])
 
 configure_dict = {
@@ -72,24 +66,27 @@ configure_dict = {
 # '#autodetect_library_prefix': 'autodetect_library_prefix',
 # "${AUTO_LIB_PREFIX}": 'res://gdextension/{}'.format(extension_name),
 
-gdextension_filename = "{}.gdextension".format(env['extension_name'])
-gdextension_path = Path() / env['extension_name'] / gdextension_filename
-
 # Configure files
 env.Tool('textfile')
 configure_header = env.Substfile('src/configure.h.in', SUBST_DICT=configure_dict)
 configure_gdextension = env.Substfile(gdextension_path, 'src/template.gdextension.in', SUBST_DICT=configure_dict)
 
+# Build Library
+env.Append(CPPPATH=["src/"])
+build_library = env.SharedLibrary(
+    lib_path,
+    source=Glob("src/*.cpp"),
+)
 env.Depends(build_library, configure_header)
 
-install_dir = project_dir / 'gdextension' / env['extension_name']
+# Install Files
+install_dir = Path(env['project_path']) / 'gdextension' / env['extension_name']
 install_library = env.InstallAs(install_dir / lib_filename, gdextension_path)
 install_gdextension = env.InstallAs(install_dir / gdextension_filename, build_library)
 env.Depends(install_library, build_library)
-# TODO Could I use this to just copy across the whole file?
 
+# Run Scons
 default_args = [configure_header, build_library, configure_gdextension, install_library, install_gdextension]
-
 if env["compiledb"]:
     default_args += [env["compiledb_file"]]
 
