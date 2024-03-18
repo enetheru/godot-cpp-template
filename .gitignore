@@ -31,11 +31,15 @@ compile_commands.json
 # Other stuff
 *.log
 
+#ignode external dependencies
+ext/
+bin/
+
+# ignore configured files
+src/configure.h
+
 # VSCode
 .vscode/
 
 # Jetbrains clion
 .idea/
-
-ext/
-bin/
