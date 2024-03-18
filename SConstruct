@@ -22,33 +22,11 @@ customs = ["custom.py"]
 customs = [os.path.abspath(path) for path in customs]
 
 opts = Variables(customs, ARGUMENTS)
-opts.Add(
-    BoolVariable(
-        key="compiledb",
-        help="Generate compilation DB (`compile_commands.json`) for external tools",
-        default=localEnv.get("compiledb", False),
-    )
-)
-opts.Add(
-    PathVariable(
-        key="compiledb_file",
-        help="Path to a custom `compile_commands.json` file",
-        default=localEnv.get("compiledb_file", "compile_commands.json"),
-        validator=validate_parent_dir,
-    )
-)
 opts.Update(localEnv)
 
 Help(opts.GenerateHelpText(localEnv))
 
 env = localEnv.Clone()
-env["compiledb"] = False
-
-env.Tool("compilation_db")
-compilationdb_target = env.CompilationDatabase(
-    normalize_path(localEnv["compiledb_file"], localEnv)
-)
-env.Alias("compiledb", compilationdb_target)
 
 # TODO This is where we have to clone the godot-cpp library
 
@@ -103,7 +81,7 @@ env.Depends(install_library, build_library)
 
 default_args = [configure_header, build_library, configure_gdextension, install_library, install_gdextension]
 
-if localEnv.get("compiledb", False):
-    default_args += [compilationdb_target]
+if env["compiledb"]:
+    default_args += [env["compiledb_file"]]
 
 Default(*default_args)
