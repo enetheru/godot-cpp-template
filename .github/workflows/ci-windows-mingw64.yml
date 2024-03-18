@@ -31,12 +31,10 @@ jobs:
           msystem: UCRT64
           update: true
           pacboy: >-
-            git
-            python
-            python-pip
-            cmake:p
-            ninja:p
             toolchain:p
+            git:p
+            python-pip:p
+            
 
       - name: add scons-compiledb
         run: |
