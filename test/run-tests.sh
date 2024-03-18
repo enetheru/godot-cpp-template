@@ -9,7 +9,7 @@ echo "GODOT=$GODOT"
 END_STRING="==== TESTS FINISHED ===="
 FAILURE_STRING="******** FAILED ********"
 
-OUTPUT=$($GODOT --path ./test/project --debug --headless --quit)
+OUTPUT=$($GODOT --path ./test/project --headless --quit)
 ERRCODE=$?
 
 echo "$OUTPUT"
