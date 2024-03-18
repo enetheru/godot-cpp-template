@@ -101,7 +101,7 @@ jobs:
         run: git clone --depth 1 -b ${{ matrix.branch }} https://github.com/godotengine/godot-cpp.git ext/godot-cpp
 
       - name: Build with Scons
-        run: scons platform=windows
+        run: scons platform=windows use_mingw=yes
 #      # Cmake configure and build godot-cpp
 #      - name: Configure godot-cpp
 #        # FIXME this stage uses in-source build, because the test extension
