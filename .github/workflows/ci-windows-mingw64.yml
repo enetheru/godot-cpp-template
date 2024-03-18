@@ -31,7 +31,7 @@ jobs:
           msystem: MINGW64
           update: true
           pacboy: >-
-            git
+            git:
             toolchain:p
             python-pip:p
             
