@@ -104,11 +104,12 @@ jobs:
         run: git clone --depth 1 -b ${{ matrix.branch }} https://github.com/godotengine/godot-cpp.git ext/godot-cpp
 
       - name: Build with Scons
-        run: scons \
-          platform=${{ steps.godot-info.outputs.system }} \
-          arch=${{ steps.godot-info.outputs.arch }} \
-          target=${{ steps.godot-info.outputs.build_type }} \
-          precision=${{ steps.godot-info.outputs.float_precision }} \
+        run: >
+          scons
+          platform=${{ steps.godot-info.outputs.system }}
+          arch=${{ steps.godot-info.outputs.arch }}
+          target=${{ steps.godot-info.outputs.build_type }}
+          precision=${{ steps.godot-info.outputs.float_precision }}
           use_mingw=yes gdextension_dir=ext/api-dump
 
       - name: Run tests
