@@ -36,7 +36,7 @@ jobs:
             python-pip:p
             
 
-      - name: add scons-compiledb
+      - name: Install Scons using pip
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install scons

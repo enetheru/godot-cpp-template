@@ -20,3 +20,10 @@ For getting started after cloning your own copy to your local machine, you shoul
   * change the name of the `demo/bin/example.gdextension` file
 * change the `entry_symbol` string inside your `demo/bin/your-extension.gdextension` file to be configured for your GDExtension name. This should be the same as the `GDExtensionBool GDE_EXPORT` external C function. As the name suggests, this sets the entry function for your GDExtension to be loaded by the Godot editors C API.
 * register the classes you want Godot to interact with inside the `register_types.cpp` file in the initialization method (here `initialize_gdextension_types`) in the syntax `ClassDB::register_class<CLASS-NAME>();`.
+
+# Notes
+I just need to put these things in a file somewhere so I dont lose them
+
+gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/godotengine/godot/actions/artifacts
+
+gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/godotengine/godot/actions/artifacts/1334791529/zip
