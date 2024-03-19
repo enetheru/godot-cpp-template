@@ -78,7 +78,7 @@ jobs:
 
       - name: Godot.exe Info Dump
         id: godot-info
-        run: ./bin/godot.windows.editor.x86_64.exe --headless --script pre-build.gd >> $GITHUB_OUTPUT
+        run: ./bin/godot.windows.editor.x86_64.exe --headless --no-header --script pre-build.gd | tail -n +2 >> $GITHUB_OUTPUT
 
 
       - name: Godot.exe API Dump
