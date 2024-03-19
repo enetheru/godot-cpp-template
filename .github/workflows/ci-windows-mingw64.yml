@@ -70,13 +70,16 @@ jobs:
           ensure_latest: true
           path: bin
 
+      # TODO test if this is necessary
       - name: give godot executable permissions
         if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
           chmod +x ./bin/godot.windows.editor.x86_64.exe
 
       - name: Godot.exe Info Dump
-        run: ./bin/godot.windows.editor.x86_64.exe --headless --script pre-build.gd
+        id: godot-info
+        run: ./bin/godot.windows.editor.x86_64.exe --headless --script pre-build.gd >> $GITHUB_OUTPUT
+
 
       - name: Godot.exe API Dump
         if: steps.cache-godot.outputs.cache-hit != 'true'
@@ -101,7 +104,12 @@ jobs:
         run: git clone --depth 1 -b ${{ matrix.branch }} https://github.com/godotengine/godot-cpp.git ext/godot-cpp
 
       - name: Build with Scons
-        run: scons platform=windows use_mingw=yes gdextension_dir=ext/api-dump
+        run: scons \
+          platform=${{ steps.godot-info.outputs.system }} \
+          arch=${{ steps.godot-info.outputs.arch }} \
+          target=${{ steps.godot-info.outputs.build_type }} \
+          precision=${{ steps.godot-info.outputs.float_precision }} \
+          use_mingw=yes gdextension_dir=ext/api-dump
 
       - name: Run tests
         run: |
