@@ -80,7 +80,7 @@ build_library = env.SharedLibrary(
 env.Depends(build_library, configure_header)
 
 # Install Files
-install_dir = Path(env['project_path']) / 'gdextension' / env['extension_name']
+install_dir = Path(env['project_path']) / 'gdextensions' / env['extension_name']
 install_library = env.InstallAs(install_dir / lib_filename, build_library)
 install_gdextension = env.InstallAs(install_dir / gdextension_filename, gdextension_path)
 env.Depends(install_library, build_library)

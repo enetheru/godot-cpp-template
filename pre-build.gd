@@ -2,19 +2,18 @@
 extends SceneTree
 
 func _init():
-	print( "OS:: Functions to get information about the executable" )
-	print( "Model:     ", OS.get_model_name() )
-	print( "Processor: ", OS.get_processor_name() )
-	print( "System:    ", OS.get_name() )
-	print( "Variant:   ", OS.get_distribution_name() )
-	print( "Version:   ", OS.get_version() )
+	print( "MODEL=", OS.get_model_name() )
+	print( "PROCESSOR=", OS.get_processor_name() )
+	print( "SYSTEM=", OS.get_name() )
+	print( "DISTRIBUTION=", OS.get_distribution_name() )
+	print( "VERSION=", OS.get_version() )
 
 	# In order to actually get the list of features out of the system I will
 	# have to test them manually
 
 	# debug
 	if OS.has_feature( "debug" ):
-		print( "#define DEBUG_ENABLED" )
+		print( "DEBUG_ENABLED=yes" )
 
 	# Build Type
 	# editor
@@ -23,62 +22,61 @@ func _init():
 	# template_release
 	# release
 	if OS.has_feature( "editor" ):
-		print( "#define TOOLS_ENABLED" )
-		print( "Build Type: editor" )
+		print( "TOOLS_ENABLED=yes" )
+		print( "BUILD_TYPE=editor" )
 	else:
 		if OS.has_feature( "debug" ):
-			print( "build type: template_debug" )
+			print( "BUILD_TYPE=template_debug" )
 		else:
-			print( "build type: template_release" )
+			print( "BUILD_TYPE=template_release" )
 
 
 	# Float Precision
 	# double
 	# single
 	if OS.has_feature( "double" ):
-		print( "float is double precision" )
-		print( "#define REAL_T_IS_DOUBLE" )
+		print( "FLOAT_PRECISION=double" )
 	else:
-		print( "float is single precision" )
+		print( "FLOAT_PRECISION=single" )
 
 	# BITS
 	# 64
 	# 32
 	if OS.has_feature( "64" ):
-		print( "compiled in 64 bit mode" )
+		print( "BITS=64" )
 	if OS.has_feature( "32" ):
-		print( "compiled in 32 bit mode" )
+		print( "BITS=32" )
 
 	# Architecture tags
 	var archs: Array = [
 	                   "x86_64",
 	                   "x86_32",
-	                   "x86",
+	                   #"x86",
 	                   "arm64",
 	                   "arm32",
 	                   "armv7a",
 	                   "armv7",
 	                   "armv7s",
 	                   "armv7",
-	                   "arm",
+	                   #"arm",
 	                   "rv64",
 	                   "riscv",
 	                   "ppc64",
-	                   "ppc",
+	                   #"ppc",
 	                   "wasm64",
 	                   "wasm32",
-	                   "wasm"
+	                   #"wasm"
 	                   ]
 
 	print( "Valid arch tags are:" )
 	for arch in archs:
 		if OS.has_feature( arch ):
-			print( "\t", arch )
+			print( "ARCH=", arch )
 
 	# IOS_SIMULATOR
 	# simulator
 	if OS.has_feature( "simulator" ):
-		print( "#define IOS_SIMULATOR" )
+		print( "IOS_SIMULATOR=YES" )
 
 	# There are also a few functions I have not looked into yet.
 	# _check_internal_feature_support( feature )

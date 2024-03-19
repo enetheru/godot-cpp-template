@@ -26,4 +26,4 @@ I just need to put these things in a file somewhere so I dont lose them
 
 gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/godotengine/godot/actions/artifacts
 
-gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/godotengine/godot/actions/artifacts/1334791529/zip
+gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/godotengine/godot/actions/artifacts/1334791529/zip > godot-artifact.zip
