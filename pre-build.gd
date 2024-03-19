@@ -68,7 +68,6 @@ func _init():
 	                   #"wasm"
 	                   ]
 
-	print( "Valid arch tags are:" )
 	for arch in archs:
 		if OS.has_feature( arch ):
 			print( "ARCH=", arch )
