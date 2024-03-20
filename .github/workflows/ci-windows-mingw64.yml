@@ -18,7 +18,11 @@ jobs:
 
     strategy:
       matrix:
-        branch: [master]
+        include:
+          - godot-git: https://github.com/godotengine/godot.git
+            godot-branch: master
+            godot-cpp-git: https://github.com/enetheru/godot-cpp.git
+            godot-cpp-branch: enetheru
 
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +44,7 @@ jobs:
       - name: Get Godot ref
         id: get-godot-ref
         run: |
-          echo "godotref=$(git ls-remote https://github.com/godotengine/godot.git ${{ matrix.branch }} | awk '{print $1}')" >> $GITHUB_OUTPUT
+          echo "godotref=$(git ls-remote ${{ matrix.godot-git }} ${{ matrix.godot-branch }} | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: cache-godot
@@ -48,14 +52,14 @@ jobs:
           path: |
             bin
             ext/api-dump
-          key: Godot-${{ matrix.branch }}-${{ runner.os }}-${{ steps.get-godot-ref.outputs.godotref }}
+          key: Godot-${{ matrix.godot-branch }}-${{ runner.os }}-${{ steps.get-godot-ref.outputs.godotref }}
 
       - name: Retrieve Godot.exe
         if: steps.cache-godot.outputs.cache-hit != 'true'
         uses: dsnopek/action-download-artifact@1322f74e2dac9feed2ee76a32d9ae1ca3b4cf4e9
         with:
           repo: godotengine/godot
-          branch: ${{ matrix.branch }}
+          branch: ${{ matrix.godot-branch }}
           event: push
           workflow: windows_builds.yml
           workflow_conclusion: success
@@ -85,17 +89,17 @@ jobs:
       - name: Get godot-cpp ref
         id: get-godot-cpp-ref
         run: |
-          echo "godotcppref=$(git ls-remote https://github.com/godotengine/godot-cpp.git ${{ matrix.branch }} | awk '{print $1}')" >> $GITHUB_OUTPUT
+          echo "godotcppref=$(git ls-remote ${{ matrix.godot-cpp-git }} ${{ matrix.godot-cpp-branch }} | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: cache-godot-cpp
         with:
           path: ext/godot-cpp
-          key: godot-cpp-${{ matrix.branch }}-${{ steps.get-godot-cpp-ref.outputs.godotcppref }}
+          key: godot-cpp-${{ matrix.godot-cpp-branch }}-${{ steps.get-godot-cpp-ref.outputs.godotcppref }}
 
       - name: Clone godot-cpp to ext folder
         if: steps.cache-godot-cpp.outputs.cache-hit != 'true'
-        run: git clone --depth 1 -b ${{ matrix.branch }} https://github.com/godotengine/godot-cpp.git ext/godot-cpp
+        run: git clone --depth 1 -b ${{ matrix.godot-cpp-branch }} ${{ matrix.godot-cpp-git }} ext/godot-cpp
 
       - name: Build with Scons
         run: >
@@ -115,6 +119,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gde_template-${{ matrix.branch }}-${{ steps.godot-info.outputs.system }}-${{ steps.godot-info.outputs.build_type }}-${{ steps.godot-info.outputs.float_precision }}-${{ steps.godot-info.outputs.arch }}
+          name: gde_template-${{ github.ref_name }}-${{ steps.godot-info.outputs.system }}-${{ steps.godot-info.outputs.build_type }}-${{ steps.godot-info.outputs.float_precision }}-${{ steps.godot-info.outputs.arch }}
           path: gde_template/
           overwrite: true
