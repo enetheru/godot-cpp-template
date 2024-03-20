@@ -1,10 +1,6 @@
 name: Build on Windows for Windows using Scons
 on: [push, pull_request, workflow_dispatch]
 
-env:
-  # Only used for the cache key. Increment version to force clean build.
-  GODOT_BASE_BRANCH: master
-
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}
   cancel-in-progress: true
@@ -34,7 +30,6 @@ jobs:
             git:
             toolchain:p
             python-pip:p
-            
 
       - name: Install Scons using pip
         run: |
@@ -60,7 +55,7 @@ jobs:
         uses: dsnopek/action-download-artifact@1322f74e2dac9feed2ee76a32d9ae1ca3b4cf4e9
         with:
           repo: godotengine/godot
-          branch: master
+          branch: ${{ matrix.branch }}
           event: push
           workflow: windows_builds.yml
           workflow_conclusion: success
@@ -79,7 +74,6 @@ jobs:
       - name: Godot.exe Info Dump
         id: godot-info
         run: ./bin/godot.windows.editor.x86_64.exe --headless --no-header --script pre-build.gd | tail -n +2 >> $GITHUB_OUTPUT
-
 
       - name: Godot.exe API Dump
         if: steps.cache-godot.outputs.cache-hit != 'true'
