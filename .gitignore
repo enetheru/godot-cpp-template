@@ -43,4 +43,4 @@ src/configure.h
 
 # Jetbrains clion
 .idea/
-test/project/gdextension/
+test/project/gdextensions/
