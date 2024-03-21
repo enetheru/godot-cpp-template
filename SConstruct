@@ -2,20 +2,15 @@
 from pathlib import Path
 from SCons.Script import *
 
-localEnv = Environment(tools=["default"], PLATFORM="")
+env = Environment(tools=["default"], PLATFORM="")
 
 customs = [Path("custom.py").absolute()]
 opts = Variables(customs, ARGUMENTS)
 
+# This library options
 opts.Add("extension_name",
          help="The name of the library, will generate files with the name as the prefix",
          default="gde_template")
-
-opts.Add(PathVariable(
-    key="project_path",
-    help="The path to the project to install the extension to",
-    default="test/project"
-))
 
 opts.Add("compatibility_minimum",
          help="The minimum version of Godot to require",
@@ -29,12 +24,26 @@ opts.Add("autodetect_library_prefix",
          help="",
          default=None)
 
-opts.Update(localEnv)
+# Dependency Location
+opts.Add(PathVariable(
+    key="godotcpp_path",
+    help="The path to the godot-cpp source",
+    default="ext/godot-cpp"
+))
 
-Help(opts.GenerateHelpText(localEnv))
+# Installation Location
+opts.Add(PathVariable(
+    key="project_path",
+    help="The path to the project to install the extension to",
+    default="test/project"
+))
+
+opts.Update(env)
+
+Help(opts.GenerateHelpText(env))
 
 # Pull in the godot-cpp project
-env = SConscript("ext/godot-cpp/SConstruct", {"env": localEnv.Clone(), "customs": customs})
+env = SConscript(Path(env['godotcpp_path']) / "SConstruct", {"env": env, "customs": customs})
 
 # Library Path/Filename
 if env["platform"] == "macos":
@@ -56,11 +65,11 @@ configure_dict = {
     '${LIBRARY_FILENAME}': lib_path.name,
 }
 
-if env.get('compatibility_maximum') is not None:
+if env.get('use_hot_reload') is not None:
     configure_dict[';reloadable'] = 'reloadable'
     configure_dict['${ENABLE_HOT_RELOAD}'] = 'true'
 
-if env.get('use_hot_reload') is not None:
+if env.get('compatibility_maximum') is not None:
     configure_dict[';compatibility_maximum'] = 'compatibility_maximum'
     configure_dict['${COMPATIBILITY_MAXIMUM}'] = env['compatibility_maximum']
 
@@ -89,7 +98,7 @@ env.Depends(install_library, build_library)
 
 # Run Scons
 default_args = [configure_header, build_library, configure_gdextension, install_library, install_gdextension]
-if env["compiledb"]:
-    default_args += [env["compiledb_file"]]
+if env["compiledb"] is not None:
+    default_args.append(env["compiledb_file"])
 
 Default(*default_args)
